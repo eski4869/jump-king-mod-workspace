@@ -1,0 +1,16 @@
+{
+  "repositories": [
+    { "folder": "EskiUI", "url": "git@github.com:eski4869/EskiUI.git" },
+    { "folder": "Jump King Http Command Broker", "url": "git@github.com:eski4869/jump-king-http-command-broker.git" },
+    { "folder": "Local Multiplayer Mod", "url": "git@github.com:eski4869/local-multiplayer-mod.git" },
+    { "folder": "Radio Control Mod", "url": "git@github.com:eski4869/radio-control-mod.git" },
+    { "folder": "Keyed Save States", "url": "git@github.com:eski4869/keyed-save-states.git" },
+    { "folder": "Super Saiyan", "url": "git@github.com:eski4869/SuperSaiyan.git" },
+    { "folder": "JK Metrics Lite", "url": "git@github.com:eski4869/JKMetricsLite.git" },
+    { "folder": "Lazy Teleporter", "url": "git@github.com:eski4869/LazyTeleporter.git" },
+    { "folder": "Tower Counter", "url": "git@github.com:eski4869/TowerCounter.git" },
+    { "folder": "Emote Mod", "url": "git@github.com:eski4869/EmoteMod.git" },
+    { "folder": "jump-king-lab", "url": "https://github.com/eski4869/jump-king-lab.git" },
+    { "folder": "jump-king-settings", "url": "git@github.com:eski4869/jump-king-settings.git" }
+  ]
+}
