@@ -13,6 +13,7 @@ are intentionally not recorded in this repository.
 
 - [Architecture](docs/architecture.md)
 - [Integration contracts](docs/integration-contracts.md)
+- [Streamer.bot HTTP command samples](docs/http-command-samples.md)
 - [Development and release workflow](docs/development-workflow.md)
 - [Human verification checklist](docs/human-verification.md)
 
