@@ -13,6 +13,10 @@ explicitly changes this policy.
 Never write machine-specific absolute paths, user-profile directories, or
 account names into tracked files.
 
+Use English only in tracked files of public repositories, including
+documentation, source comments, UI text, commit messages, and release notes,
+unless the user explicitly requests a localized artifact.
+
 ## Engineering rules
 
 - Inspect Jump King and existing mod code before choosing an insertion point.

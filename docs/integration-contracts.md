@@ -16,6 +16,7 @@ Queued parameters:
 ```
 
 ```csharp
+// CommandQueueRegistry
 public bool Register(string target);
 
 public bool Enqueue(
@@ -26,11 +27,12 @@ public bool TryDequeue(
     string target,
     out IReadOnlyDictionary<string, string> parameters);
 
+// StateProviderRegistry
 public bool Register(string target, Func<string> provider);
 ```
 
-The second `Register` belongs to `StateProviderRegistry`. State providers run on
-the HTTP thread and may only serialize thread-safe target-owned state.
+State providers run on the HTTP thread and may only serialize thread-safe
+target-owned state.
 
 The dictionary is a case-insensitive immutable copy. The Broker does not validate target-owned fields.
 
