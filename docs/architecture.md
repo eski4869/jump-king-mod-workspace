@@ -3,32 +3,38 @@
 ## Layers
 
 ```text
-External tools
+External tool
     |
+    | GET target + target-owned parameters
     v
 Jump King Http Command Broker
-    | target + user + command
+    |
+    | immutable parameter dictionary in a target FIFO queue
     v
 Feature Mod
-    | resolve user when player-specific behavior is required
+    |
+    | optional ResolvePlayer(user)
     v
 Local Multiplayer Mod
-    | player entity / input channel
+    |
+    | concrete PlayerEntity instances
     v
 Jump King
 ```
 
-EskiUI is a separate in-process UI adapter. It provides local command input and
-notifications; it is not an HTTP transport and has no user-routing concept.
+EskiUI is a separate in-process UI adapter. It provides local command input and notifications. It is not an HTTP transport and has no user-routing concept.
 
 ## Ownership
 
 ### Jump King Http Command Broker
 
 - Owns the loopback HTTP listener.
-- Validates registered targets.
-- Queues opaque `user` and `command` strings.
-- Does not know players or feature settings.
+- Interprets only the reserved `target` query parameter.
+- Validates explicit target registration.
+- Copies every other query parameter into a case-insensitive immutable dictionary.
+- Owns one FIFO command queue per target.
+- Invokes registered target-owned JSON state providers without storing feature state.
+- Does not know commands, users, players, keys, durations, or feature settings.
 
 ### Local Multiplayer Mod
 
@@ -36,23 +42,23 @@ notifications; it is not an HTTP transport and has no user-routing concept.
 - Owns split cameras and rendering.
 - Owns loaded custom-block behavior replication.
 - Owns first-winner routing into the native ending flow.
-- Owns user-pattern to player-mask resolution.
-- Owns additional-player virtual input state.
-- Does not parse Radio Control commands or implement feature effects.
+- Owns deterministic user-pattern resolution.
+- Returns zero or one concrete `PlayerEntity` to optional consumers.
+- Persists exact user assignments received through its Broker target.
+- Reports whether a concrete player belongs to the active split-screen view.
+- Does not parse feature commands or own feature effects.
 
 ### Feature mods
 
-- Own command parsing and feature state.
-- Ask Local Multiplayer Mod for target players only when their behavior is
-  player-specific.
-- Continue normal Player 1 behavior when the optional multiplayer API is absent.
+- Own parameter validation, command parsing, and feature state.
+- Read `user` only when their operation is player-specific.
+- Resolve `user` once to a concrete `PlayerEntity`.
+- Apply the operation to that entity without Player 1 through Player 4 branches.
+- Keep multi-frame work in independent state keyed by `PlayerEntity`.
+- Continue normal Player 1 behavior when Local Multiplayer Mod is absent.
 
 ## Player 1
 
-Normal keyboard and controller input remains attached to Player 1. Replacing
-the native input path would require a broad patch and is outside the shared
-multiplayer contract. Mod-generated input can target additional players through
-the Local Multiplayer API.
+Normal keyboard and controller input remains attached to Player 1. Replacing the native input path would require a broad game patch and is outside this integration contract.
 
-Metrics, tower progress, and canonical game progression continue to observe
-Player 1. They are not routed by user identity.
+Radio Control applies virtual input directly to each resolved player's `InputComponent`. Other feature mods operate on the resolved entity itself. Metrics, tower progress, and canonical game progression continue to observe Player 1 unless a feature explicitly defines otherwise.
