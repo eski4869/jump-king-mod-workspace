@@ -16,6 +16,11 @@ are intentionally not recorded in this repository.
 - [Development and release workflow](docs/development-workflow.md)
 - [Human verification checklist](docs/human-verification.md)
 
+## Tools
+
+- [HTTP Request Tester](tools/http_request_tester.html): a local ten-slot GET
+  request pad for testing mod endpoints from a browser.
+
 ## Current shared infrastructure
 
 - **EskiUI**: in-process command input and notification output

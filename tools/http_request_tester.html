@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTTP Request Tester</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #101215;
+      color: #f2efe4;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 540px;
+      min-height: 100vh;
+      background: #101215;
+    }
+
+    main {
+      width: min(100%, 960px);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      min-height: 42px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #353a41;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 32px;
+      letter-spacing: 0;
+    }
+
+    .local-label {
+      color: #929aa4;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+
+    #rows {
+      display: grid;
+      gap: 6px;
+    }
+
+    .request-row {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) 62px 92px;
+      gap: 8px;
+      align-items: center;
+      min-height: 40px;
+    }
+
+    .row-number {
+      color: #858e98;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    input {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #3c434c;
+      border-radius: 4px;
+      outline: none;
+      background: #191c21;
+      color: #f6f0d8;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      letter-spacing: 0;
+      padding: 0 10px;
+    }
+
+    input:focus {
+      border-color: #d0a847;
+      box-shadow: 0 0 0 1px #d0a847;
+    }
+
+    button {
+      height: 36px;
+      border: 1px solid #505966;
+      border-radius: 4px;
+      background: #282d34;
+      color: #fff2c6;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: #d0a847;
+      background: #333a43;
+    }
+
+    .status {
+      overflow: hidden;
+      color: #89929c;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status.sent {
+      color: #65b989;
+    }
+
+    .status.error {
+      color: #df7068;
+    }
+
+    #request-targets {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>HTTP Request Tester</h1>
+      <span class="local-label">LOCAL GET</span>
+    </header>
+    <section id="rows" aria-label="Request URLs"></section>
+  </main>
+  <div id="request-targets" aria-hidden="true"></div>
+
+  <script>
+    "use strict";
+
+    const slotCount = 10;
+    const storagePrefix = "local-http-request-url-";
+    const rows = document.getElementById("rows");
+    const requestTargets = document.getElementById("request-targets");
+
+    function sendRequest(input, status) {
+      const value = input.value.trim();
+      let url;
+
+      try {
+        url = new URL(value);
+      } catch (error) {
+        status.className = "status error";
+        status.textContent = "Invalid URL";
+        return;
+      }
+
+      const frame = document.createElement("iframe");
+      frame.hidden = true;
+      frame.src = url.href;
+      requestTargets.appendChild(frame);
+
+      status.className = "status sent";
+      status.textContent = "Sent " + new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+
+      window.setTimeout(function () {
+        frame.remove();
+      }, 10000);
+    }
+
+    function createRow(index) {
+      const row = document.createElement("div");
+      row.className = "request-row";
+
+      const number = document.createElement("span");
+      number.className = "row-number";
+      number.textContent = String(index + 1).padStart(2, "0");
+
+      const input = document.createElement("input");
+      input.type = "url";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.placeholder = "http://127.0.0.1:8081/command?target=...&command=...";
+      input.value = localStorage.getItem(storagePrefix + index) || "";
+      input.addEventListener("input", function () {
+        localStorage.setItem(storagePrefix + index, input.value);
+      });
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "Send";
+
+      const status = document.createElement("span");
+      status.className = "status";
+      status.textContent = "Ready";
+
+      button.addEventListener("click", function () {
+        sendRequest(input, status);
+      });
+
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          sendRequest(input, status);
+        }
+      });
+
+      row.append(number, input, button, status);
+      return row;
+    }
+
+    for (let index = 0; index < slotCount; index += 1) {
+      rows.appendChild(createRow(index));
+    }
+
+    rows.querySelector("input").focus();
+  </script>
+</body>
+</html>
